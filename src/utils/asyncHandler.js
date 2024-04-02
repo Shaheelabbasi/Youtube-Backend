@@ -1,6 +1,5 @@
 // const asyncHandler=()=>{}
-
-
+const asyncHandlr=(fn)=>{()=>{}}
 const asyncHandler=(fn)=>{async(req,res,next)=>{
     
     try {
@@ -11,6 +10,7 @@ const asyncHandler=(fn)=>{async(req,res,next)=>{
             messsage:error.messsage
         })
     }
-}}
+}
+}
 
 module.exports= asyncHandler;
