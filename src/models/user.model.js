@@ -61,7 +61,7 @@ userSchema.pre("save",async function(next){
   if(this.isModified("password"))
   {
 
-    this.password=bcrypt.hash(this.password,10);
+    this.password=await bcrypt.hash(this.password,10);
    return next();
   }
   next();
@@ -83,6 +83,7 @@ userSchema.methods.generateAccessToken= function()
   }
   )
 }
+// reduces the need for the frequent login.
 userSchema.methods.generateRefreshToken=function()
 {
   //refersh token has less information and long expiry

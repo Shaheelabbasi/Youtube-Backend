@@ -1,5 +1,4 @@
-// const asyncHandler=()=>{}
-const asyncHandlr=(fn)=>{()=>{}}
+
 const asyncHandler=(fn)=>{return async(req,res,next)=>{
     
     try {
@@ -14,3 +13,9 @@ const asyncHandler=(fn)=>{return async(req,res,next)=>{
 }
 
 module.exports= asyncHandler;
+
+// at's the core benefit of using asyncHandler in your Express routes.
+//  By using it, you can avoid writing repetitive try...catch blocks and async/await syntax in every route handler.
+
+
+

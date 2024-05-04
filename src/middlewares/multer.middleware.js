@@ -12,3 +12,7 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
   module.exports=upload
+
+
+  //file.fieldname name of the input field where the file input as choosen
+  //

@@ -12,9 +12,7 @@ const uploadOnCloudnary=async(localfilepath)=>{
 try {
     if(!localfilepath) return null;
     // uplaod the file on cloudinary
-  const response = await cloudinary.UploadStream.upload(localfilepath,{
-        resource_type:"auto"
-    })
+  const response = await cloudinary.UploadStream.upload(localfilepath,{      resource_type:"auto"  })
     console.log("File uploaded on cloudinary ",response.url);
     return response;
 } catch (error) {
@@ -22,3 +20,4 @@ try {
     return null;
 }
 }
+module.exports=uploadOnCloudnary;

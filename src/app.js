@@ -3,6 +3,7 @@ const app = express();
 const cookieparser = require("cookie-parser");
 const cors = require("cors");
 
+//.use means the middlewares 
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
