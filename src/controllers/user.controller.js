@@ -13,27 +13,45 @@ const registerUser=asyncHandler(async(req,res,next)=>{
    {
     throw new ApiError(400,"All the fields are required")
    }
-   const existedUser=userModel.findOne({
+   const existedUser=await userModel.findOne({
       $or:[
         {username},
         {email}
       ]
    })
-   
    if(existedUser)
    {
     throw new ApiError(409,"user with email or username already exists")
    }
 
-    const avatarLocalPath=req.files?.path[0]
-    const coverImageLocalPath=req.files?.path[0]
+   //we use optional channing to iterate over the an array of objects 
+   // that dont have the similar properties 
+   //one object might have one property,the second one might not
+   // and third one might again have that property 
+   // when we iterate over such objects we get an error 
+
+   
+//    console.log("checking files object",req.files?.avatar[0].path)
+    const avatarLocalPath=req.files?.avatar[0]?.path
+    // const coverImageLocalPath=req.files?.coverImage[0]?.path
+    
+let coverImagePath1;
+if(req.files&&Array.isArray(req.files.coverImage)&&req.files.coverImage.length>0)
+    {
+        coverImagePath1=req.files?.coverImage[0]?.path
+    }
+
     if(!avatarLocalPath)
     {
         throw new ApiError(400,"avatar is required");
     }
+
+    
+    
     
      const avatar= await uploadOnCloudnary(avatarLocalPath)
-     const coverImage= await uploadOnCloudnary(coverImageLocalPath)
+     const coverImage=await uploadOnCloudnary(coverImagePath1)
+    
      if(!avatar)
      {
         throw new ApiError(400,"avatar is required");
@@ -51,7 +69,7 @@ const registerUser=asyncHandler(async(req,res,next)=>{
         }
     )
     const createdUser=await userModel.findById(User._id).select(
-        "-password -refreshToken"
+        "-password -refreshtoken"
     )
 if(!createdUser)
 {

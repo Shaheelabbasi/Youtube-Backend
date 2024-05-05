@@ -16,9 +16,7 @@ Router.route("/register").post(
          name:"coverImage",
          maxCount:1
         }
-    ]),
-    
-    
-    registerUsers);
+    ]),registerUsers);
 
 module.exports=Router;
+
