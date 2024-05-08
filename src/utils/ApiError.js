@@ -5,10 +5,10 @@ class Apierror extends Error
         //here the variables for the class are created as well as assinged values 
         super(message)
         this.statuscode=statuscode;
-        this.message=message;
         this.data=null;
         this.errors=errors;
         this.success=false;
+        this.message=message;
         if(stack)
         {
             this.stack=stack;
