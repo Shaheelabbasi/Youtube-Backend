@@ -226,9 +226,144 @@ const refreshAccessToken = asyncHandler(async (req, res, next) => {
     );
 });
 
+const UpdateUserPassword = asyncHandler(async (req, res) => {
+  const { oldpassword, newPassword } = req.body;
+
+  // if the user is able to change the password it means that user is logged in
+  const User = await userModel.findById(req.user?._id);
+
+  if (!User) {
+    throw new ApiError(401, "Invalid request");
+  }
+  //checking that database password and this provided old password is same or not
+  const IspasswordCorrect = await User.ispasswordCorrect(oldpassword);
+
+  if (!IspasswordCorrect) {
+    throw new ApiError(400, "Invalid old password");
+  }
+  User.password = newPassword;
+  await User.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "password changed successfully"));
+});
+const getCurrentUser = asyncHandler(async (req, res, next) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current User fetched successfully"));
+});
+
+const updateUserDetails = asyncHandler(async (req, res) => {
+  const { fullname, email } = req.body;
+
+  // i need both
+  if (!(fullname && email)) {
+    throw new ApiError(400, "fullname or email is required");
+  }
+
+  const UpdatedUser = await userModel
+    .findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          fullname: fullname,
+          email: email,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+    .select("-password");
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedUser,
+        "fullname and email updated success fully"
+      )
+    );
+});
+
+//now updating file
+//update avatar(profilepicture)
+// for this function in the routes we will have to use two middleware
+//verify jwt for login and multer for uplaoding file
+// 
+const UpdateUserAvatar = asyncHandler(async (req, res) => {
+
+  const avatarLocalPath = req.file.path;
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar file is missing");
+  }
+
+  const avatar = await uploadOnCloudnary(avatarLocalPath);
+  if (!avatar.url) {
+    throw new ApiError(500, "error updating the file ");
+  }
+
+ const UpdatedUser= await userModel
+    .findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          avatar: avatar.url,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+    .select("-password");
+
+return res.status(200).
+json(
+  new ApiResponse(200,UpdatedUser,"profile picture successfullt updated")
+)
+});
+
+//using same function we can update coverImage
+const UpdateUserCoverImage = asyncHandler(async (req, res) => {
+
+  const coverImageLocalPath = req.file.path;
+  if (!coverImageLocalPath) {
+    throw new ApiError(400, "cover image  file is missing");
+  }
+
+  const coverImage = await uploadOnCloudnary(coverImageLocalPath);
+  if (!coverImageLocalPath.url) {
+    throw new ApiError(500, "error updating the file ");
+  }
+
+ const UpdatedUser= await userModel
+    .findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          coverImage: coverImage.url,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+    .select("-password");
+
+return res.status(200).
+json(
+  new ApiResponse(200,UpdatedUser,"cover Image successfully updated")
+)
+});
 module.exports = {
   registerUser,
   loginUser,
   LogoutUser,
   refreshAccessToken,
+  UpdateUserPassword,
+  getCurrentUser,
+  updateUserDetails,
+  UpdateUserAvatar,
+  UpdateUserCoverImage
 };
