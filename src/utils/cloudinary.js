@@ -3,6 +3,7 @@ const cloudinary=require("cloudinary").v2;
 
 
 const fs=require("fs");
+const { options } = require("../routes/user.routes");
          
 cloudinary.config({ 
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
@@ -32,4 +33,26 @@ try {
     return null;
  }
 }
-module.exports=uploadOnCloudnary;
+
+
+const deleteFromCloudinary=(oldurl)=>{
+
+  try {
+    const lastDotIndex = oldurl.lastIndexOf('.');
+    oldurl=oldurl.substring(0,lastDotIndex)
+
+    const id=oldurl.split("/").pop();
+     const response=   cloudinary.uploader.destroy(id).then((status)=>{
+        console.log(status)
+     });
+    
+    return response;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+module.exports={
+  uploadOnCloudnary,
+  deleteFromCloudinary
+};

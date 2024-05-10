@@ -2,7 +2,7 @@ const asyncHandler = require("../utils/asyncHandler.js");
 const ApiError = require("../utils/ApiError.js");
 const ApiResponse = require("../utils/Apiresponse.js");
 const userModel = require("../models/user.model.js");
-const uploadOnCloudnary = require("../utils/cloudinary.js");
+const {uploadOnCloudnary,deleteFromCloudinary} = require("../utils/cloudinary.js");
 const Jwt = require("jsonwebtoken");
 // const { fields } = require("../middlewares/multer.middleware.js");
 
@@ -295,6 +295,8 @@ const updateUserDetails = asyncHandler(async (req, res) => {
 const UpdateUserAvatar = asyncHandler(async (req, res) => {
 
   const avatarLocalPath = req.file.path;
+  const oldavatarUrl=req.user.avatar;
+console.log("old image url is ",oldavatarUrl)
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is missing");
   }
@@ -303,6 +305,8 @@ const UpdateUserAvatar = asyncHandler(async (req, res) => {
   if (!avatar.url) {
     throw new ApiError(500, "error updating the file ");
   }
+
+  
 
  const UpdatedUser= await userModel
     .findByIdAndUpdate(
@@ -317,6 +321,9 @@ const UpdateUserAvatar = asyncHandler(async (req, res) => {
       }
     )
     .select("-password");
+     
+ const response=  await deleteFromCloudinary(oldavatarUrl)
+ console.log("the image deletion response is ",response)
 
 return res.status(200).
 json(
@@ -350,7 +357,7 @@ const UpdateUserCoverImage = asyncHandler(async (req, res) => {
       }
     )
     .select("-password");
-
+   
 return res.status(200).
 json(
   new ApiResponse(200,UpdatedUser,"cover Image successfully updated")
